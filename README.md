@@ -10,4 +10,4 @@ Twitter data stuff 			-> http://help.sentiment140.com/for-students
 
 Classify scope negation		-> http://static.googleusercontent.com/media/research.google.com/en//pubs/archive/36744.pdf
 
-
+CS229 Notes on HMMs         -> http://cs229.stanford.edu/section/cs229-hmm.pdf
