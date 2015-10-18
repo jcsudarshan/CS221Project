@@ -40,7 +40,6 @@ def learnPredictor(trainExamples, testExamples, featureExtractor, eta=0.1, numIt
     numIters refers to a variable you need to declare. It is not passed in.
     '''
     weights = {}  # feature => weight
-    # BEGIN_YOUR_CODE (around 15 lines of code expected)
     def takeGradient(w, i):
         x, y = trainExamples[i]                    # raw string data and label
         phi_x = featureExtractor(x)                # feature vector

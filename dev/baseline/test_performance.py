@@ -9,8 +9,8 @@ import util_baseline
 # Current data sets
 # Perhaps capture in second and third args
 # current dir is CS221Project/tests/
-train_path = "../../data/polarity.dev"
-dev_path = "../../data/polarity.train"
+train_path = "../../data/polarity.train"
+dev_path = "../../data/polarity.dev"
 
 # populate lis of algorithms we'd like to run
 current_tests = "baseline"
@@ -35,5 +35,5 @@ if "baseline" in current_tests:
 	devError = util_baseline.evaluatePredictor(dev, lambda(x) : \
     	(1 if util_baseline.dotProduct(featureExtractor(x), weights) >= 0 else -1))
 
-	print trainError
-	print devError
+	print "Error percentage on train examples: " + str(trainError)
+	print "Error percentage on dev examples: " + str(devError)
