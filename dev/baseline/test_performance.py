@@ -9,8 +9,8 @@ import util_baseline
 # Current data sets
 # Perhaps capture in second and third args
 # current dir is CS221Project/tests/
-train_path = "polarity.dev"
-dev_path = "polarity.train"
+train_path = "../../data/polarity.dev"
+dev_path = "../../data/polarity.train"
 
 # populate lis of algorithms we'd like to run
 current_tests = "baseline"
