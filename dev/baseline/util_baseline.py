@@ -60,23 +60,30 @@ def outputWeights(weights, path):
         print >>out, '\t'.join([f, str(v)])
     out.close()
 
-def verbosePredict(phi, y, weights, out):
+def verbosePredict(example, phi, y, weights, correctOut, wrongOut):
     yy = 1 if dotProduct(phi, weights) > 0 else -1
+
     if y:
-        print >>out, 'Truth: %s, Prediction: %s [%s]' % (y, yy, 'CORRECT' if y == yy else 'WRONG')
-    else:
-        print >>out, 'Prediction:', yy
+        out = correctOut if y == yy else \
+        wrongOut
+        print >>out, "===", example
+        print >>out, 'Truth: %s, Prediction: %s' % (y, yy)
+    # else:
+    #     print >>out, 'Prediction:', yy
     for f, v in sorted(phi.items(), key=lambda (f, v) : -v * weights.get(f, 0)):
         w = weights.get(f, 0)
         print >>out, "%-30s%s * %s = %s" % (f, v, w, v * w)
     return yy
 
-def outputErrorAnalysis(examples, featureExtractor, weights, path):
-    out = open('error-analysis', 'w')
+def outputErrorAnalysis(examples, featureExtractor, weights, fileNameBase):
+    correctOut = open(fileNameBase + "-correct", 'w')
+    wrongOut = open(fileNameBase + "-wrong", 'w')
+    #unsupervisedOut = open(fileNameBase + "-unsupervised", 'w')
     for x, y in examples:
-        print >>out, '===', x
-        verbosePredict(featureExtractor(x), y, weights, out)
-    out.close()
+        verbosePredict(x, featureExtractor(x), y, weights, correctOut, wrongOut)
+    correctOut.close()
+    wrongOut.close()
+    #unsupervisedOut.close()
 
 def interactivePrompt(featureExtractor, weights):
     while True:
