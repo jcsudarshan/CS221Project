@@ -5,16 +5,22 @@
 
 import baseline
 import util_baseline
+from os import listdir
+from os.path import join
+
 
 # Current data sets
 # Perhaps capture in second and third args
 # current dir is CS221Project/tests/
+dataDir = "../../data"
 train_path = "../../data/polarity.train"
 dev_path = "../../data/annotate_polarity.dev"
 rawTwitterTrainingPath = "../../data/training.1600000.processed.noemoticon.csv"
 modifiedTwitterTrainingPath = "../../data/training.modified.1600000.processed.noemoticon.csv"
 rawTwitterTestPath = "../../data/testdata.manual.2009.06.14.csv"
 modifiedTwitterTestPath = "../../data/testdata.modified.manual.2009.06.14.csv"
+oracleAnnotationsDir = "../../data/initial_baseline_oracle_tests"
+oracleCorrectLabels = "../../data/annotateL_polarity.dev"
 
 # populate lis of algorithms we'd like to run
 current_tests = "baseline"
@@ -79,3 +85,23 @@ def convertTwitterSetToNormalForm(cleanData, rawPath, modifiedPath):
 	modified.close()
 
 #convertTwitterSetToNormalForm(True, rawTwitterTestPath, modifiedTwitterTestPath)
+
+def determineOracleAgreement(oracleAnnotationsDir):
+	fileHandles = [open(join(oracleAnnotationsDir, f)) for f in listdir(oracleAnnotationsDir) if f.find('polarity') >= 0]
+	answerLabels = open(oracleCorrectLabels)
+	correctOut = open(join(dataDir, 'correct-oracle-judgements.csv'), 'w')
+	wrongOut = open(join(dataDir, 'wrong-oracle-judgements.csv'), 'w')
+
+	for example in zip(fileHandles[0], fileHandles[1], fileHandles[2]):
+		groupConcensus = sum(int(decision.split()[0]) for decision in example)
+		answerLabel = int(answerLabels.readline().split()[0])
+		out = correctOut if groupConcensus * answerLabel >= 0 else wrongOut
+		print >>out, "Answer: %d, Group concensus: %d, Original sentence: '%s'" % \
+							(answerLabel, groupConcensus, ' '.join(example[0].split()[1:-1]))
+
+	for handle in fileHandles:
+		handle.close()
+
+
+
+#determineOracleAgreement(oracleAnnotationsDir)
