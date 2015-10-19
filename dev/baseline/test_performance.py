@@ -13,6 +13,7 @@ from os.path import join
 # Perhaps capture in second and third args
 # current dir is CS221Project/tests/
 dataDir = "../../data"
+testDir = "../../test"
 train_path = "../../data/polarity.train"
 dev_path = "../../data/annotate_polarity.dev"
 rawTwitterTrainingPath = "../../data/training.1600000.processed.noemoticon.csv"
@@ -48,8 +49,8 @@ def runBaseline():
 	print "Error percentage on train examples: " + str(trainError)
 	print "Error percentage on dev examples: " + str(devError)
 
-	util_baseline.outputErrorAnalysis(train, featureExtractor, weights, 'train-error-analysis')
-	util_baseline.outputErrorAnalysis(dev, featureExtractor, weights, 'dev-error-analysis')
+	util_baseline.outputErrorAnalysis(train, featureExtractor, weights, testDir, 'train-error-analysis')
+	util_baseline.outputErrorAnalysis(dev, featureExtractor, weights, testDir, 'dev-error-analysis')
 
 
 if "baseline" in current_tests:
@@ -89,8 +90,8 @@ def convertTwitterSetToNormalForm(cleanData, rawPath, modifiedPath):
 def determineOracleAgreement(oracleAnnotationsDir):
 	fileHandles = [open(join(oracleAnnotationsDir, f)) for f in listdir(oracleAnnotationsDir) if f.find('polarity') >= 0]
 	answerLabels = open(oracleCorrectLabels)
-	correctOut = open(join(dataDir, 'correct-oracle-judgements.csv'), 'w')
-	wrongOut = open(join(dataDir, 'wrong-oracle-judgements.csv'), 'w')
+	correctOut = open(join(testDir, 'correct-oracle-judgements.csv'), 'w')
+	wrongOut = open(join(testDir, 'wrong-oracle-judgements.csv'), 'w')
 
 	for example in zip(fileHandles[0], fileHandles[1], fileHandles[2]):
 		groupConcensus = sum(int(decision.split()[0]) for decision in example)

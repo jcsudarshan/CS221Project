@@ -6,6 +6,7 @@
 
 import os, random, operator, sys
 from collections import Counter
+from os.path import join
 
 def dotProduct(d1, d2):
     """
@@ -75,9 +76,9 @@ def verbosePredict(example, phi, y, weights, correctOut, wrongOut):
         print >>out, "%-30s%s * %s = %s" % (f, v, w, v * w)
     return yy
 
-def outputErrorAnalysis(examples, featureExtractor, weights, fileNameBase):
-    correctOut = open(fileNameBase + "-correct", 'w')
-    wrongOut = open(fileNameBase + "-wrong", 'w')
+def outputErrorAnalysis(examples, featureExtractor, weights, dirName, fileNameBase):
+    correctOut = open(join(dirName, fileNameBase + "-correct"), 'w')
+    wrongOut = open(join(dirName, fileNameBase + "-wrong"), 'w')
     #unsupervisedOut = open(fileNameBase + "-unsupervised", 'w')
     for x, y in examples:
         verbosePredict(x, featureExtractor(x), y, weights, correctOut, wrongOut)
