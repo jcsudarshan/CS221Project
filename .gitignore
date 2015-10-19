@@ -1,3 +1,4 @@
 git-lfs
 .DS_Store
 *.pyc
+**/workspace.xml
