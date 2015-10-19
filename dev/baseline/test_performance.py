@@ -37,3 +37,6 @@ if "baseline" in current_tests:
 
 	print "Error percentage on train examples: " + str(trainError)
 	print "Error percentage on dev examples: " + str(devError)
+
+	util_baseline.outputErrorAnalysis(train, featureExtractor, weights, 'train-error-analysis')
+	util_baseline.outputErrorAnalysis(dev, featureExtractor, weights, 'dev-error-analysis')
