@@ -1,0 +1,14 @@
+Notes on Wilson paper
+
+4 classifications - positive, negative, both, neutral
+2 Goals:
+	1. classify expressions as polar vs neutral (contextually)
+	2. classify polar expressions from goal 1 as positive, negative, both (contextually)
+Not classifying entire sentence or document
+Started with prior polarity values for each polar word (positive, negative, neutral)
+Words are also tagged with how subjective they are (strong or weak). This is a reliability measure.
+Used dependency parser and relations between nodes
+Also used some bag of words features and token windows
+Separate feature vector for each of 2 goals
+Features were hand picked to be linguistically meaningful
+Learned via BoosTexter AdaBoost.HM algorithm (Schapire and Singer, 2000)
