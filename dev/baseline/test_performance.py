@@ -5,6 +5,7 @@
 
 import baseline
 import util_baseline
+import random
 from os import listdir
 from os.path import join
 
@@ -22,6 +23,10 @@ rawTwitterTestPath = "../../data/testdata.manual.2009.06.14.csv"
 modifiedTwitterTestPath = "../../data/testdata.modified.manual.2009.06.14.csv"
 oracleAnnotationsDir = "../../data/initial_baseline_oracle_tests"
 oracleCorrectLabels = "../../data/annotateL_polarity.dev"
+rawUmichPath = "../../data/UM_ContrivedSentiment"
+modifiedUmichPath = "../../data/UM_ContrivedSentiment_modified"
+trainUmichPath = "../../data/UM_ContrivedSentiment_train"
+devUmichPath = "../../data/UM_ContrivedSentiment_dev"
 
 # populate lis of algorithms we'd like to run
 current_tests = "baseline"
@@ -84,8 +89,59 @@ def convertTwitterSetToNormalForm(cleanData, rawPath, modifiedPath):
 
 	training.close()
 	modified.close()
-
 #convertTwitterSetToNormalForm(True, rawTwitterTestPath, modifiedTwitterTestPath)
+
+
+def convertUMichToNormalForm(rawPath, modifiedPath):
+	"""
+	Converts University of Michigan data from in class kaggle: 
+	https://inclass.kaggle.com/c/si650winter11/data
+	"""
+	training = open(rawPath)
+	modified = open(modifiedPath, 'w')
+
+	for line in training:
+		polarity, sentence = line.split('\t')
+		sentence = sentence.rstrip('\n')
+		
+		if int(polarity) == 0:
+			newPolarity = -1
+		else:
+			newPolarity = 1
+		
+		print >>modified, "%d %s" % (newPolarity, sentence)
+	
+	training.close()
+	modified.close()
+
+# convertUMichToNormalForm(rawUmichPath, modifiedUmichPath)
+
+
+def createUmichTrainAndDev(originalDataPath, trainPath, devPath):
+	"""
+	Shuffles and seperates UMich into training set (n=6,073)
+	and dev set (n=1013).
+	"""
+	originalData = open(originalDataPath)
+	training = open(trainPath, 'w')
+	dev = open(devPath, 'w')
+
+	# Shuffle lines
+	data = [(random.random(), line) for line in originalData]
+	data.sort()
+
+	for line_num in range(len(data)):
+		# select ~ 1,000 dev examples (total is 7086)
+		if line_num % 7 == 0:
+			print >>dev, data[line_num][1].rstrip('\n')
+		else:
+			print >>training, data[line_num][1].rstrip('\n')
+
+	originalData.close()
+	training.close()
+	dev.close()
+# createUmichTrainAndDev(modifiedUmichPath, trainUmichPath, devUmichPath)
+
 
 def determineOracleAgreement(oracleAnnotationsDir):
 	fileHandles = [open(join(oracleAnnotationsDir, f)) for f in listdir(oracleAnnotationsDir) if f.find('polarity') >= 0]
