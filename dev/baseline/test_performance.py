@@ -5,6 +5,7 @@
 
 import baseline
 import util_baseline
+import heuristics as heur
 import random
 from os import listdir
 from os.path import join
@@ -16,7 +17,7 @@ from os.path import join
 dataDir = "../../data"
 testDir = "../../test"
 train_path = "../../data/polarity.train"
-dev_path = "../../data/annotate_polarity.dev"
+dev_path = "../../data/annotateL_polarity.dev"
 rawTwitterTrainingPath = "../../data/training.1600000.processed.noemoticon.csv"
 modifiedTwitterTrainingPath = "../../data/training.modified.1600000.processed.noemoticon.csv"
 rawTwitterTestPath = "../../data/testdata.manual.2009.06.14.csv"
@@ -41,7 +42,7 @@ def runBaseline():
 	train = util_baseline.readExamples(train_path)
 	dev = util_baseline.readExamples(dev_path)
 	featureExtractor = baseline.extractWordFeatures
-	
+
 	# calculate weights
 	weights = baseline.learnPredictor(train, dev, featureExtractor, eta=0.1, numIters=10)
 
@@ -50,6 +51,32 @@ def runBaseline():
 		(1 if util_baseline.dotProduct(featureExtractor(x), weights) >= 0 else -1))
 	devError = util_baseline.evaluatePredictor(dev, lambda(x) : \
     	(1 if util_baseline.dotProduct(featureExtractor(x), weights) >= 0 else -1))
+
+	print "Error percentage on train examples: " + str(trainError)
+	print "Error percentage on dev examples: " + str(devError)
+
+	util_baseline.outputErrorAnalysis(train, featureExtractor, weights, testDir, 'train-error-analysis')
+	util_baseline.outputErrorAnalysis(dev, featureExtractor, weights, testDir, 'dev-error-analysis')
+
+# Window Heuristic performance
+# ---------------------
+def runWindowHeuristic():
+	current_alg = "windowHeuristic"
+	print("Testing " + current_alg + " on " + train_path + " and " + dev_path + "...")
+
+	# prelim set-up
+	train = util_baseline.readExamples(train_path)
+	dev = util_baseline.readExamples(dev_path)
+	featureExtractor = baseline.extractWordFeatures
+
+	# calculate weights
+	weights = baseline.learnPredictor(train, dev, featureExtractor, eta=0.1, numIters=10)
+
+	# performance analysis
+	trainError = util_baseline.evaluatePredictor(train, lambda(x) : \
+		(1 if heur.windowPredictor(x, featureExtractor(x), weights) >= 0 else -1))
+	devError = util_baseline.evaluatePredictor(dev, lambda(x) : \
+		(1 if heur.windowPredictor(x, featureExtractor(x), weights) >= 0 else -1))
 
 	print "Error percentage on train examples: " + str(trainError)
 	print "Error percentage on dev examples: " + str(devError)
@@ -94,7 +121,7 @@ def convertTwitterSetToNormalForm(cleanData, rawPath, modifiedPath):
 
 def convertUMichToNormalForm(rawPath, modifiedPath):
 	"""
-	Converts University of Michigan data from in class kaggle: 
+	Converts University of Michigan data from in class kaggle:
 	https://inclass.kaggle.com/c/si650winter11/data
 	"""
 	training = open(rawPath)
@@ -103,14 +130,14 @@ def convertUMichToNormalForm(rawPath, modifiedPath):
 	for line in training:
 		polarity, sentence = line.split('\t')
 		sentence = sentence.rstrip('\n')
-		
+
 		if int(polarity) == 0:
 			newPolarity = -1
 		else:
 			newPolarity = 1
-		
+
 		print >>modified, "%d %s" % (newPolarity, sentence)
-	
+
 	training.close()
 	modified.close()
 
@@ -162,3 +189,6 @@ def determineOracleAgreement(oracleAnnotationsDir):
 
 
 #determineOracleAgreement(oracleAnnotationsDir)
+
+runWindowHeuristic()
+#runBaseline()
